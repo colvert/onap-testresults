@@ -1,0 +1,51 @@
+---
+general:
+    installers:
+        - oom
+        - heat
+        #- ansible
+
+    versions:
+        #- master
+        - amsterdam
+
+    log:
+        log_file: reporting.log
+        log_level: ERROR
+
+    proxy: {
+            'http': 'socks5://127.0.0.1:8080',
+            'https': 'socks5://127.0.0.1:8080'
+           }
+    period: 10
+
+    nb_iteration_tests_success_criteria: 4
+
+    directories:
+        # Relative to the path where the repo is cloned:
+        dir_reporting: utils/tests/reporting/
+        dir_log: utils/tests/reporting/log/
+        dir_conf: utils/tests/reporting/conf/
+        dir_utils: utils/tests/reporting/utils/
+        dir_templates: utils/tests/reporting/templates/
+        dir_display: utils/tests/reporting/display/
+
+        url: 10.0.2.5:8022/display/
+
+testapi:
+        url: 10.0.2.5:8021/api/v1/results
+
+functest:
+    test_list:
+        - robot_healthcheck
+        - robot_dcae
+        - robot_multicloud
+        - robot_3rdparty
+    tiers:
+        - healthcheck
+        - smoke
+        - vnf
+    max_scenario_criteria: 50
+    test_conf: https://git.opnfv.org/cgit/functest/plain/functest/ci/testcases.yaml
+    log_level: INFO
+    jenkins_url: https://build.opnfv.org/ci/view/functest/job/

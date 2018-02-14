@@ -1,0 +1,113 @@
+ <html>
+  <head>
+    <meta charset="utf-8">
+    <!-- Bootstrap core CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/default.css" rel="stylesheet">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
+    <script type="text/javascript" src="../../js/gauge.js"></script>
+    <script type="text/javascript" src="../../js/trend.js"></script>
+    <script>
+        function onDocumentReady() {
+            // Gauge management
+            {% for testcase in testcase_results.keys() -%}
+              var gaugeTestcase{{loop.index}} = gauge('#gaugeTestcase{{loop.index}}');
+            {%- endfor %}
+            // assign success rate to the gauge
+            function updateReadings() {
+                {% for testcase,results in testcase_results.iteritems() -%}
+                 gaugeTestcase{{loop.index}}.update({{results['result_percent']}});
+                 {%- endfor %}
+            }
+            updateReadings();
+        }
+
+        // trend line management
+        d3.csv("./testcases_history.txt", function(data) {
+            // ***************************************
+            // Create the trend line
+            {% for testcase,results in testcase_results.iteritems() -%}
+            // for scenario {{scenario}}
+            // Filter results
+                var trend{{loop.index}} = data.filter(function(row) {
+                    return row["testcase"]=="{{testcase}}" && row["installer"]=="{{installer}}";
+                })
+            // Parse the date
+            trend{{loop.index}}.forEach(function(d) {
+                d.date = parseDate(d.date);
+                d.score = +d.score
+            });
+            // Draw the trend line
+            var mytrend = trend("#trend_svg{{loop.index}}",trend{{loop.index}})
+            // ****************************************
+            {%- endfor %}
+        });
+        if ( !window.isLoaded ) {
+            window.addEventListener("load", function() {
+            onDocumentReady();
+            }, false);
+        } else {
+            onDocumentReady();
+        }
+    </script>
+    <script type="text/javascript">
+    $(document).ready(function (){
+        $(".btn-more").click(function() {
+            $(this).hide();
+            $(this).parent().find(".panel-default").show();
+        });
+    })
+    </script>
+  </head>
+    <body>
+    <div class="container">
+      <div class="masthead">
+          <h3 class="text-muted">Functest status page ({{version}}, {{date}})</h3>
+        <nav>
+          <ul class="nav nav-justified">
+            <li class="active"><a href="">Home</a></li>
+            <li><a href="status-oom.html">OOM</a></li>
+            <li><a href="status-heat.html">Heat</a></li>
+            <li><a href="status-ansible.html">Ansible</a></li>
+          </ul>
+        </nav>
+      </div>
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="page-header">
+            <h2>{{installer}}</h2>
+        </div>
+        <div><h3>Reported values represent the percentage of completed
+
+          CI tests during the reporting period, where results
+
+          were communicated to the ONAP Test Database.</h3></div>
+        <div class="scenario-overview">
+            <div class="panel-heading"><h4><b>List of Test cases ({{version}}) run over the last {{period}} days </b></h4></div>
+                <table class="table">
+                    <tr>
+                        <th width="40%">Testcase</th>
+                        <th width="20%">Status</th>
+                        <th width="20%">Trend</th>
+                        <th width="10%">Last 4 Iterations (0-3)</th>
+                        <th width="10%">Last 10 Days</th>
+                    </tr>
+                        {% for testcase,results in testcase_results.iteritems() -%}
+                            <tr class="tr-ok">
+                                <td>{{testcase}}</td>
+                                <td><div id="gaugeTestcase{{loop.index}}"></div></td>
+                                <td><div id="trend_svg{{loop.index}}"></div></td>
+                                <td>{{results['result_4']}}</td>
+                                <td>{{results['result_period']}}</td>
+                            </tr>
+                        {%- endfor %}
+                </table>
+        </div>
+
+
+    </div>
+    <div class="col-md-1"></div>
+</div>
