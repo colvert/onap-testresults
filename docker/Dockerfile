@@ -40,7 +40,7 @@ supervisor \
 
 RUN pip install --upgrade pip && easy_install -U setuptools==30.0.0
 
-RUN git clone --depth 1 https://github.com/colvert/releng-testresults.git /home/opnfv/releng-testresults
+RUN git clone --depth 1 https://github.com/colvert/releng-testresults.git /home/onap/releng-testresults
 RUN pip install -r ${working_dir}/requirements.txt
 
 WORKDIR ${working_dir}
