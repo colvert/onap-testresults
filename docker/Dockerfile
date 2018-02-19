@@ -21,7 +21,7 @@ LABEL version="1.0" description="ONAP Test Reporting Docker container"
 ARG BRANCH=master
 
 ENV HOME /home/onap
-ENV working_dir ${HOME}/releng-testresults/
+ENV working_dir ${HOME}/releng-testresults
 ENV CONFIG_REPORTING_YAML ${working_dir}/reporting/reporting.yaml
 
 WORKDIR ${HOME}
