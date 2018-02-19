@@ -6,17 +6,14 @@ general:
         #- ansible
 
     versions:
-        #- master
+        - master
         - amsterdam
 
     log:
         log_file: reporting.log
         log_level: ERROR
 
-    proxy: {
-            'http': 'socks5://127.0.0.1:8080',
-            'https': 'socks5://127.0.0.1:8080'
-           }
+    proxy: {}
     period: 10
 
     nb_iteration_tests_success_criteria: 4
@@ -30,10 +27,10 @@ general:
         dir_templates: utils/tests/reporting/templates/
         dir_display: utils/tests/reporting/display/
 
-        url: 10.0.2.5:8022/display/
+        url: http://testresults.opnfv.org/onap-reporting/
 
 testapi:
-        url: 10.0.2.5:8021/api/v1/results
+        url: http://testresults.opnfv.org/onap/api/v1/results
 
 functest:
     test_list:
@@ -48,4 +45,4 @@ functest:
     max_scenario_criteria: 50
     test_conf: https://git.opnfv.org/cgit/functest/plain/functest/ci/testcases.yaml
     log_level: INFO
-    jenkins_url: https://build.opnfv.org/ci/view/functest/job/
+    jenkins_url: ""

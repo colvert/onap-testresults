@@ -1,4 +1,4 @@
-Welcome to OPNFV Testing reporting documentation!
+Welcome to ONAP Testing reporting documentation!
 =================================================
 
 Contents:

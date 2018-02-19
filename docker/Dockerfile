@@ -16,11 +16,11 @@
 FROM nginx:stable
 
 MAINTAINER Morgan Richomme <morgan.richomme@orange.com>
-LABEL version="1.0" description="OPNFV Test Reporting Docker container"
+LABEL version="1.0" description="ONAP Test Reporting Docker container"
 
 ARG BRANCH=master
 
-ENV HOME /home/opnfv
+ENV HOME /home/onap
 ENV working_dir ${HOME}/releng-testresults/
 ENV CONFIG_REPORTING_YAML ${working_dir}/reporting/reporting.yaml
 
@@ -43,16 +43,8 @@ RUN pip install --upgrade pip && easy_install -U setuptools==30.0.0
 RUN git clone --depth 1 https://github.com/colvert/releng-testresults.git /home/opnfv/releng-testresults
 RUN pip install -r ${working_dir}/requirements.txt
 
-RUN sh -c 'curl -sL https://deb.nodesource.com/setup_8.x | bash -' \
-    && apt-get install -y nodejs \
-    && npm install -g bower \
-    && npm install -g grunt \
-    && npm install -g grunt-cli
-
 WORKDIR ${working_dir}
-RUN python setup.py install
 RUN docker/reporting.sh
-RUN docker/web_server.sh
 
 expose 8000
 
