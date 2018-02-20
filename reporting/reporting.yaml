@@ -3,7 +3,7 @@ general:
     installers:
         - oom
         - heat
-        #- ansible
+        - ansible
 
     versions:
         - master
@@ -38,11 +38,4 @@ functest:
         - robot_dcae
         - robot_multicloud
         - robot_3rdparty
-    tiers:
-        - healthcheck
-        - smoke
-        - vnf
-    max_scenario_criteria: 50
-    test_conf: https://git.opnfv.org/cgit/functest/plain/functest/ci/testcases.yaml
-    log_level: INFO
     jenkins_url: ""

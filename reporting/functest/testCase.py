@@ -8,25 +8,27 @@
 #
 import re
 
+# pylint: disable=missing-docstring
+
 
 class TestCase(object):
 
     def __init__(self, name, project, constraints,
-                 criteria=-1, isRunnable=True, tier=-1):
+                 criteria=-1, is_runnable=True, tier=-1):
         self.name = name
         self.project = project
         self.constraints = constraints
         self.criteria = criteria
-        self.isRunnable = isRunnable
+        self.is_runnable = is_runnable
         self.tier = tier
         display_name_matrix = {'robot_healthcheck': 'ONAP core',
                                'robot_dcae': 'DCAE',
                                'robot_multicloud': 'MultiCloud',
                                'robot_3rdparty': '3rd party drivers'}
         try:
-            self.displayName = display_name_matrix[self.name]
-        except:
-            self.displayName = "unknown"
+            self.display_name = display_name_matrix[self.name]
+        except Exception:  # pylint: disable=broad-except
+            self.display_name = "unknown"
 
     def getName(self):
         return self.name
@@ -46,8 +48,8 @@ class TestCase(object):
     def setCriteria(self, criteria):
         self.criteria = criteria
 
-    def setIsRunnable(self, isRunnable):
-        self.isRunnable = isRunnable
+    def setIsRunnable(self, is_runnable):
+        self.is_runnable = is_runnable
 
     def checkRunnable(self, installer, scenario, config):
         # Re-use Functest declaration
@@ -79,14 +81,14 @@ class TestCase(object):
                     # print "Test "+ test + " cannot be run on the environment"
                     is_runnable = False
         # print is_runnable
-        self.isRunnable = is_runnable
+        self.is_runnable = is_runnable
 
     def toString(self):
         testcase = ("Name=" + self.name + ";Criteria=" +
                     str(self.criteria) + ";Project=" + self.project +
                     ";Constraints=" + str(self.constraints) +
-                    ";IsRunnable" + str(self.isRunnable))
+                    ";Is_runnable" + str(self.is_runnable))
         return testcase
 
     def getDisplayName(self):
-        return self.displayName
+        return self.display_name

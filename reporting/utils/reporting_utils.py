@@ -94,7 +94,7 @@ def getApiResults(case, installer, version, criteria):
     url_base = get_config('testapi.url')
     nb_tests = get_config('general.nb_iteration_tests_success_criteria')
 
-    url = ("http://" + url_base + "?case=" + case +
+    url = (url_base + "?case=" + case +
            "&period=" + str(period) + "&installer=" + installer +
            "&version=" + version)
     if criteria:
@@ -104,7 +104,7 @@ def getApiResults(case, installer, version, criteria):
 
     try:
         results = json.loads(response.content)
-    except:
+    except Exception:  # pylint: disable=broad-except
         print "Error when retrieving results form API"
 
     return results
@@ -157,24 +157,24 @@ def getCaseScore(testCase, installer, version):
         # 0: 0% success, not passing
         # -1: no run available
         test_result_indicator = 0
-        nbTestOk = getNbtestOk(scenario_results)
+        nb_test_ok = getNbtestOk(scenario_results)
 
-        # print "Nb test OK (last 10 days):"+ str(nbTestOk)
+        # print "Nb test OK (last 10 days):"+ str(nb_test_ok)
         # check that we have at least 4 runs
         if len(scenario_results) < 1:
             # No results available
-            test_result_indicator = -1
-        elif nbTestOk < 1:
             test_result_indicator = 0
-        elif nbTestOk < 2:
+        elif nb_test_ok < 1:
+            test_result_indicator = 0
+        elif nb_test_ok < 2:
             test_result_indicator = 1
         else:
             # Test the last 4 run
             if len(scenario_results) > 3:
-                last4runResults = scenario_results[-4:]
-                nbTestOkLast4 = getNbtestOk(last4runResults)
-                # print "Nb test OK (last 4 run):"+ str(nbTestOkLast4)
-                if nbTestOkLast4 > 3:
+                last_4_run_results = scenario_results[-4:]
+                nb_test_ok_last_4 = getNbtestOk(last_4_run_results)
+                # print "Nb test OK (last 4 run):"+ str(nb_test_ok_last_4)
+                if nb_test_ok_last_4 > 3:
                     test_result_indicator = 3
                 else:
                     test_result_indicator = 2
@@ -187,11 +187,10 @@ def getScenarioPercent(scenario_score, scenario_criteria):
     """
     Get success rate of the scenario (in %)
     """
-    score = 0.0
     try:
         score = float(scenario_score) / float(scenario_criteria) * 100
-    except Exception:
-        print 'Impossible to calculate the percentage score'
+    except ZeroDivisionError:
+        score = 0
     return score
 # ----------------------------------------------------------
 #
@@ -213,7 +212,6 @@ def export_csv(scenario_file_name, installer, version):
         for line in scenario_file:
             if installer in line:
                 scenario_installer_file.write(line)
-    scenario_installer_file.close
 
 
 def generate_csv(scenario_file):
@@ -233,5 +231,5 @@ def export_pdf(pdf_path, pdf_doc_name):
         pdfkit.from_file(pdf_path, pdf_doc_name)
     except IOError:
         print "Error but pdf generated anyway..."
-    except Exception:
+    except Exception:  # pylint: disable=broad-except
         print "impossible to generate PDF"

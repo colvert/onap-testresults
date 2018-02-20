@@ -8,14 +8,13 @@
 #
 import datetime
 import os
-
 import jinja2
 
 import reporting.functest.testCase as tc
 import reporting.utils.reporting_utils as rp_utils
 
 """
-Functest reporting status
+  Functest reporting status
 """
 
 # Logger
@@ -53,7 +52,7 @@ testcase_results = {}
 # For all the versions
 for version in VERSIONS:
     # For all the installers
-    LOGGER.debug("Search for version %s...............", version)
+    LOGGER.info("Search for version %s...............", version)
     scenario_directory = "./display/" + version + "/functest/"
     scenario_file_name = scenario_directory + "testcases_history.txt"
     # check that the directory exists, if not create it
@@ -68,7 +67,7 @@ for version in VERSIONS:
             my_file.write("date,testcase,installer,detail,score\n")
 
     for installer in INSTALLERS:
-        LOGGER.debug("Search for installer %s...............", installer)
+        LOGGER.info("Search for installer %s...............", installer)
 
         for testcase in TESTCASES:
             LOGGER.info("Search for results for %s", testcase)
@@ -77,48 +76,41 @@ for version in VERSIONS:
                                                       installer,
                                                       version,
                                                       False)
-            # LOGGER.debug("results: %s", functest_results)
-            nb_tests_period_run = len(functest_results['results'])
-            LOGGER.info("Nb tests run over the test window period:%s",
-                        nb_tests_period_run)
-            testcase_result = {}
-            testcase_result['result_4'] = 0
-            testcase_result['result_period'] = 0
-            testcase_result['result_percent'] = 0
-            if nb_tests_period_run > 0:
+            try:
+                nb_tests_period_run = len(functest_results['results'])
                 nb_tests_period_ok = rp_utils.getNbtestOk(
                     functest_results['results'])
-                LOGGER.info("Nb tests OK over the test window period:%s",
-                            nb_tests_period_ok)
                 # Get the score cosidering the last 4 CI runs
-                functest_score = rp_utils.getCaseScore(
-                    testcase,
-                    installer,
-                    version)
+                functest_score = rp_utils.getCaseScore(testcase,
+                                                       installer,
+                                                       version)
                 LOGGER.info("Case score: %s", functest_score)
-                testcase_result = {}
-                testcase_result['result_4'] = str(functest_score) + "/3"
-                testcase_result['result_period'] = (str(nb_tests_period_ok) +
-                                                    "/" +
-                                                    str(nb_tests_period_run))
-                testcase_result['result_percent'] = (
-                    rp_utils.getScenarioPercent(
-                        nb_tests_period_ok,
-                        nb_tests_period_run))
+            except TypeError:
+                nb_tests_period_run = 0
+                nb_tests_period_ok = 0
+                functest_score = 0
+
+            LOGGER.info("Nb tests run over the test window period:%s",
+                        nb_tests_period_run)
+            LOGGER.info("Nb tests OK over the test window period:%s",
+                        nb_tests_period_ok)
+
+            testcase_result = {}
+            testcase_result['result_4'] = str(functest_score) + "/3"
+            testcase_result['result_period'] = (str(nb_tests_period_ok) +
+                                                "/" +
+                                                str(nb_tests_period_run))
+            testcase_result['result_percent'] = rp_utils.getScenarioPercent(
+                nb_tests_period_ok,
+                nb_tests_period_run)
             testcase_results[testcase] = testcase_result
 
             # Save daily results in a file
             with open(scenario_file_name, "a") as f:
                 info = (REPORTING_DATE + "," + testcase + "," +
-                        installer + "," + str(testcase_result['result_4']) +
-                        "," + str(testcase_result['result_percent']) + "\n")
+                        installer + "," + testcase_result['result_4'] + "," +
+                        str(testcase_result['result_percent']) + "\n")
                 f.write(info)
-                # scenario_result_criteria[s] = sr.ScenarioResult(
-                #     s_status,
-                #     s_score,
-                #     s_score_percent,
-                #     s_url)
-                # LOGGER.info("--------------------------")
 
         templateLoader = jinja2.FileSystemLoader(".")
         templateEnv = jinja2.Environment(
@@ -136,17 +128,17 @@ for version in VERSIONS:
                   "/functest/status-" +
                   installer + ".html", "wb") as fh:
             fh.write(outputText)
-#
-# LOGGER.info("Manage export CSV & PDF")
-# rp_utils.export_csv(scenario_file_name, installer, version)
-# LOGGER.error("CSV generated...")
-#
-# # Generate outputs for export
-# # pdf
-# url_pdf = rp_utils.get_config('general.url')
-# pdf_path = ("./display/" + version +
-#             "/functest/status-" + installer + ".html")
-# pdf_doc_name = ("./display/" + version +
-#                 "/functest/status-" + installer + ".pdf")
-# rp_utils.export_pdf(pdf_path, pdf_doc_name)
-# LOGGER.info("PDF generated...")
+            #
+            # LOGGER.info("Manage export CSV & PDF")
+            # rp_utils.export_csv(scenario_file_name, installer, version)
+            # LOGGER.error("CSV generated...")
+            #
+            # # Generate outputs for export
+            # # pdf
+            # url_pdf = rp_utils.get_config('general.url')
+            # pdf_path = ("./display/" + version +
+            #             "/functest/status-" + installer + ".html")
+            # pdf_doc_name = ("./display/" + version +
+            #                 "/functest/status-" + installer + ".pdf")
+            # rp_utils.export_pdf(pdf_path, pdf_doc_name)
+            # LOGGER.info("PDF generated...")
