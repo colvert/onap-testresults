@@ -49,5 +49,3 @@ RUN docker/reporting.sh
 RUN docker/web_server.sh
 
 expose 8000
-
-CMD ["/usr/bin/supervisord"]

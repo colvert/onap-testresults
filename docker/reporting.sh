@@ -3,7 +3,7 @@
 export PYTHONPATH="${PYTHONPATH}:./reporting"
 export CONFIG_REPORTING_YAML=./reporting/reporting.yaml
 
-declare -a versions=(amsterdam master)
+declare -a versions=(beijing amsterdam master)
 declare -a projects=(functest)
 
 project=$1
